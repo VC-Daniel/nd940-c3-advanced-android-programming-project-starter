@@ -1,4 +1,4 @@
-package com.udacity
+package com.notificationsample
 
 import org.junit.Test
 
