@@ -1,14 +1,9 @@
 # LoadApp
 LoadApp is an app that demonstrates downloading a file from Internet and displaying a progress indicator as the file is being downloaded. When the user touches the custom-built button it animates a loading bar across the width of the button in addition to a circular progress animation. The text of the button also changes dynamically as the state of the download changes.
 
-This app also demonstrates posting notifications. A notification is sent once the selected download is complete. When a user clicks on a notification the user is taken to a detail fragment and the notification is dismissed automatically. In the detail fragment the status of the download is displayed.
+This app also demonstrates posting notifications. A notification is posted when the selected file is downloaded. If the user selects a notification they are presented with a detail fragment and the notification is dismissed automatically. In the detail fragment the status of the download is displayed.
 
 [The final look of the app](https://gph.is/g/Zywmnre)
-
-
-## Getting Started
-
-Instructions for how to get a copy of the project running on your local machine.
 
 ### Dependencies
 
