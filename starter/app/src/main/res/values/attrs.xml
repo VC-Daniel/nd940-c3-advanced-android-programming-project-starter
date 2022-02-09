@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="LoadingButton">
-<!--   TODO: create custom attributes for the view-->
+        <attr name="startText" format="string" />
+        <attr name="inProgressText" format="string" />
+        <attr name="defaultColor" format="color" />
+        <attr name="loadingColor" format="color" />
+        <attr name="textColor" format="color" />
+        <attr name="downloadProgress" format="float" />
+
+    </declare-styleable>
+    <declare-styleable name="LoadingCircle">
+        <attr name="downloadProgressDegrees" format="integer" />
+        <attr name="circleProgressDefaultColor" format="color" />
     </declare-styleable>
 </resources>

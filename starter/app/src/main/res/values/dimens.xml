@@ -1,5 +1,12 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
-
+    <dimen name="extra_large_margin">32dp</dimen>
+    <dimen name="label_separator_margin">64dp</dimen>
+    <dimen name="medium_margin">16dp</dimen>
+    <dimen name="small_margin">6dp</dimen>
+    <dimen name="large_button_height">60dp</dimen>
+    <dimen name="medium_view_size">40dp</dimen>
+    <dimen name="stroke_width">4dp</dimen>
+    <dimen name="text_size">20sp</dimen>
     <dimen name="default_text_size">20sp</dimen>
 </resources>
