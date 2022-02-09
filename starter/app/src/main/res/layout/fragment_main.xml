@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainFragment">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.notificationsample.MainViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.motion.widget.MotionLayout
+        android:id="@+id/motion_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutDescription="@xml/content_main_scene"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <ImageView
+            android:id="@+id/downloadIconImage"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/colorPrimaryDark"
+            android:contentDescription="@string/download_cloud_description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_default="percent"
+            app:layout_constraintHeight_percent="0.33"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_cloud_download_24" />
+
+        <RadioGroup
+            android:id="@+id/urlSelectorRadioGroup"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/medium_margin"
+            android:layout_marginEnd="@dimen/medium_margin"
+            app:layout_constraintBottom_toTopOf="@+id/loadingButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/downloadIconImage">
+
+            <RadioButton
+                android:id="@+id/glideRadioButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/small_margin"
+                android:text="@string/glide_radio_button_prompt"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+            <RadioButton
+                android:id="@+id/udacityRadioButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/small_margin"
+                android:text="@string/project_radio_button_prompt"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+            <RadioButton
+                android:id="@+id/retrofitRadioButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/small_margin"
+                android:text="@string/retrofit_radio_button_prompt"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        </RadioGroup>
+
+        <com.notificationsample.LoadingButton
+            android:id="@+id/loadingButton"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/large_button_height"
+            android:layout_marginStart="@dimen/medium_margin"
+            android:layout_marginEnd="@dimen/medium_margin"
+            android:layout_marginBottom="@dimen/medium_margin"
+            app:defaultColor="@color/colorPrimary"
+            app:downloadProgress="0"
+            app:inProgressText="@string/downloading"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:loadingColor="@color/colorPrimaryDark"
+            app:startText="@string/start_downloading"
+            app:textColor="@color/white" />
+
+        <com.notificationsample.CircularProgressIndicator
+            android:id="@+id/progressCircleView"
+            android:layout_width="@dimen/medium_view_size"
+            android:layout_height="@dimen/medium_view_size"
+            app:circleProgressDefaultColor="@color/colorAccent"
+            app:downloadProgressDegrees="0"
+            app:layout_constraintBottom_toBottomOf="@id/loadingButton"
+            app:layout_constraintEnd_toEndOf="@id/loadingButton"
+            app:layout_constraintHorizontal_bias="0.8"
+            app:layout_constraintStart_toStartOf="@id/loadingButton"
+            app:layout_constraintTop_toTopOf="@+id/loadingButton" />
+
+    </androidx.constraintlayout.motion.widget.MotionLayout>
+</layout>
