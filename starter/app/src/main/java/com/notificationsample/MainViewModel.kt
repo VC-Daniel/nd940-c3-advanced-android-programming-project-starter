@@ -7,20 +7,16 @@ import androidx.lifecycle.AndroidViewModel
 class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     /** Internal duration of the first iteration of the downloading animation */
-    private var _originalDuration: Int =
-        app.resources.getInteger(R.integer.quick_animation_duration)
+    private var _originalDuration: Long =
+        app.resources.getInteger(R.integer.quick_animation_duration).toLong()
 
     /** Duration of the first iteration of the downloading animation */
-    val originalDuration: Int
+    val originalDuration: Long
         get() = _originalDuration
 
     /** The maximum duration of the downloading animation after it has slowed down to indicate the
      * download is going to take awhile */
-    private var _maxDuration: Int =
-        app.resources.getInteger(R.integer.quick_animation_duration)
-
-    val maxDuration: Int
-        get() = _maxDuration
+    private var maxDuration: Long = _originalDuration
 
     /** The repository the user selected to download */
     private lateinit var _selectedRepository: RepositoryInfo
@@ -51,7 +47,17 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
-     *
+     * Set the duration of the first iteration of the downloading animation
+     */
+    fun setOriginalDuration(duration: Long) {
+        _originalDuration = duration
+
+        // Set the maximum duration of the downloading animation based on the original animation duration
+        maxDuration = _originalDuration * 10
+    }
+
+    /**
+     * Set the selected repository
      */
     fun setSelectedRepository(id: Int) {
         _selectedRepository = when (id) {
@@ -63,18 +69,11 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
-     *
+     * Calculate the duration of the loading animation which slows down to indicate the
+     * download is going to take awhile
      */
-    fun calculateMaxDuration(duration: Int) {
-        _originalDuration = duration
-        _maxDuration = _originalDuration * 10
-    }
-
-    /**
-     *
-     */
-    fun calculateDuration(currentDuration: Int): Int {
-        var duration: Int = currentDuration
+    fun calculateDuration(currentDuration: Long): Long {
+        var duration: Long = currentDuration
 
         if (duration >= maxDuration) {
             duration = maxDuration
@@ -89,7 +88,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
-     *
+     * Has a repository been selected by the user
      */
     fun isRepositorySelected(): Boolean {
         //https://stackoverflow.com/questions/37618738/how-to-check-if-a-lateinit-variable-has-been-initialized

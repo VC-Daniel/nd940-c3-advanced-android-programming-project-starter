@@ -15,13 +15,21 @@ class LoadingButton @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     /** The current progress to display from 0.0 to 1.0 */
-    private var downloadProgress: Float = 0f
+    var downloadProgress: Float = 0f
+        set(value) {
+            field = value
 
-    /** Set the current progress to display from 0.0 to 1.0 and then redraw the progress bar */
-    fun setDownloadProgress(value: Float) {
-        downloadProgress = value
-        invalidate()
+            // Redraw the loading bar
+            invalidate()
+        }
+
+    /**
+     * Get the name of the downloadProgress property
+     */
+    fun getProgressPropertyName(): String {
+        return ::downloadProgress.name
     }
+
 
     /** The color of the background of the button which is displayed when no download is ongoing. */
     private var defaultColor: Int = 0
@@ -146,6 +154,4 @@ class LoadingButton @JvmOverloads constructor(
         canvas.drawRect(0f, 0f, (widthSize * downloadProgress), widthSize.toFloat(), paint)
         canvas.restore()
     }
-
-
 }

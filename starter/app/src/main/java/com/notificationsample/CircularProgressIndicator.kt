@@ -23,25 +23,38 @@ class CircularProgressIndicator @JvmOverloads constructor(
     private lateinit var boundingOval: RectF
 
     /** The current progress to display in degrees */
-    private var downloadProgressDegrees: Int = 0
+    var downloadProgressDegrees: Int = 0
+        set(value) {
+            field = value
+
+            // Redraw the circle progress indicator
+            invalidate()
+        }
 
     /**
-     * Set the current progress in degrees and then display this change. An explicit setter is used to
-     * facilitate redrawing the view based on the documentation at
-     * https://developer.android.com/training/custom-views/create-view
+     * Get the name of the downloadProgressDegrees property
      */
-    fun setDownloadProgressDegrees(value: Int) {
-        downloadProgressDegrees = value
-        invalidate()
+    fun getProgressDegreesPropertyName(): String? {
+        return ::downloadProgressDegrees.name
     }
 
-    /** The color used to draw the progress circle */
-    private var circleProgressDefaultColor: Int = 0
+    var circleProgressDefaultColor: Int = 0
+    var circleProgressAlertColor: Int = 0
 
-    /** Set the color used to draw the progress circle and redraw the progress circle*/
-    fun setCircleProgressDefaultColor(value: Int) {
-        circleProgressDefaultColor = value
-        invalidate()
+    /** The color used to draw the progress circle */
+    var circleProgressDrawColor: Int = 0
+        set(value) {
+            field = value
+
+            // Redraw the circle progress indicator
+            invalidate()
+        }
+
+    /**
+     * Get the name of the circleProgressDrawColor property
+     */
+    fun getDrawColorPropertyName(): String? {
+        return ::circleProgressDrawColor.name
     }
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -49,10 +62,14 @@ class CircularProgressIndicator @JvmOverloads constructor(
     }
 
     init {
-        // Get the specified color to draw the progress circle with
+        // Get the specified colors to draw the progress circle with
         context.withStyledAttributes(attrs, R.styleable.LoadingCircle) {
             circleProgressDefaultColor = getColor(
                 R.styleable.LoadingCircle_circleProgressDefaultColor,
+                context.getColor(R.color.cardview_dark_background)
+            )
+            circleProgressAlertColor = getColor(
+                R.styleable.LoadingCircle_circleProgressAlertColor,
                 context.getColor(R.color.cardview_dark_background)
             )
         }
@@ -67,7 +84,7 @@ class CircularProgressIndicator @JvmOverloads constructor(
      */
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        paint.color = circleProgressDefaultColor
+        paint.color = circleProgressDrawColor
         canvas.drawArc(boundingOval, 0F, downloadProgressDegrees.toFloat(), true, paint)
     }
 }

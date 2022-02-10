@@ -1,5 +1,9 @@
 package com.notificationsample
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.app.DownloadManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -16,8 +20,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.notificationsample.databinding.FragmentMainBinding
@@ -30,11 +34,16 @@ class MainFragment : Fragment() {
 
     /** Denotes if a repository is currently being downloaded */
     private var downloading: Boolean = false
+        set(value) {
+            field = value
+            setViewInteractive()
+        }
 
     private var downloadID: Long = 0
     private lateinit var notificationManager: NotificationManager
-    private lateinit var motionLayout: MotionLayout
-    private lateinit var loadingButton: LoadingButton
+
+    private lateinit var loadingIndicatorAnimator: AnimatorSet
+    private lateinit var binding: FragmentMainBinding
 
     private val viewModel: MainViewModel by lazy {
 
@@ -46,7 +55,7 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        val binding = FragmentMainBinding.inflate(inflater)
+        binding = FragmentMainBinding.inflate(inflater)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
@@ -61,15 +70,12 @@ class MainFragment : Fragment() {
             viewModel.setSelectedRepository(checkedId)
         }
 
-        motionLayout = binding.motionLayout
-        loadingButton = binding.loadingButton
-
         // Start downloading the selected repository when the using touches the download button
         binding.loadingButton.setOnClickListener {
             if (viewModel.isRepositorySelected()) {
-                loadingButton.downloadState = DownloadState.Starting
+                binding.loadingButton.downloadState = DownloadState.Starting
                 download(viewModel.selectedRepository.repositoryURL)
-                animateLoadingButton()
+                startLoadingAnimation()
             } else {
                 // Notify the user if no repository has been selected
                 Toast.makeText(
@@ -80,9 +86,12 @@ class MainFragment : Fragment() {
             }
         }
 
-        // Calculate the maximum duration for the loading animation as it slows down the
-        // longer the download is active
-        viewModel.calculateMaxDuration(motionLayout.getTransition(R.id.loadingTransition).duration)
+        // Set up the animators that will animate the UI when the user initiates a download
+        initializeLoadingIndicators()
+
+        // Set the original duration of the animation. This is used to calculate the duration for
+        // the loading animation as it slows down the longer the download is active
+        viewModel.setOriginalDuration(loadingIndicatorAnimator.duration)
 
         // Create a channel to post our notifications on when a download finishes
         createChannel(
@@ -117,58 +126,102 @@ class MainFragment : Fragment() {
     }
 
     /**
-     * Animate the UI to indicate a download is in progress. Starting a motion scene
-     * programmatically is based on the logic found at:
-     * //https://stackoverflow.com/questions/52437946/start-motion-scene-programmatically
+     * Animate the UI to indicate a download is in progress
      */
-    private fun animateLoadingButton() {
-        motionLayout.setTransitionListener(object : MotionLayout.TransitionListener {
-            override fun onTransitionStarted(motionLayout: MotionLayout, i: Int, i1: Int) {
-            }
+    private fun initializeLoadingIndicators() {
 
-            override fun onTransitionChange(
-                motionLayout: MotionLayout,
-                i: Int,
-                i1: Int,
-                v: Float
-            ) {
-            }
+        // Get the name of the properties we want to animate. This is based on the logic found at
+        // https://stackoverflow.com/a/53191973
+        val downloadProgressPropertyName = binding.loadingButton.getProgressPropertyName()
+        val downloadProgressDegreesPropertyName =
+            binding.progressCircleView.getProgressDegreesPropertyName()
+        val circleProgressDrawColorPropertyName =
+            binding.progressCircleView.getDrawColorPropertyName()
+
+        // Animate the width of the progress bar that goes across the button
+        val loadingBarAnimator =
+            ObjectAnimator.ofFloat(binding.loadingButton, downloadProgressPropertyName, 0f, 1f)
+
+        // Animate how much of the circle progress indicator is drawn as the download progresses
+        val loadingCircleProgressAnimator =
+            ObjectAnimator.ofInt(
+                binding.progressCircleView,
+                downloadProgressDegreesPropertyName,
+                360
+            )
+
+        // Transition the color of the circle loading indicator as the download progresses
+        val loadingCircleColorAnimator = ObjectAnimator.ofArgb(
+            binding.progressCircleView,
+            circleProgressDrawColorPropertyName,
+            binding.progressCircleView.circleProgressDefaultColor,
+            binding.progressCircleView.circleProgressAlertColor
+        )
+
+        // Sync all the animations to run together so the progress of the various loading indicators
+        // are animated in consistently
+        loadingIndicatorAnimator = AnimatorSet()
+        loadingIndicatorAnimator.playTogether(
+            loadingBarAnimator,
+            loadingCircleProgressAnimator,
+            loadingCircleColorAnimator
+        )
+        loadingIndicatorAnimator.duration =
+            resources.getInteger(R.integer.quick_animation_duration).toLong()
+
+        loadingIndicatorAnimator.addListener(object : AnimatorListenerAdapter() {
 
             /**
-             * Continue running the animation until the download has completed. This logic to run
-             * the animation continuously is based on the logic found at:
-             * https://stackoverflow.com/questions/62348505/how-to-run-animation-defind-in-the-android-motionlayout-motionscene-infinitely
+             * Continue running the animation until the download has completed and slow down the
+             * animation with each iteration. This logic to run the animation continuously is based
+             * on the logic found at: https://stackoverflow.com/a/19267385
              */
-            override fun onTransitionCompleted(motionLayout: MotionLayout, i: Int) {
+            override fun onAnimationEnd(animation: Animator) {
                 if (downloading) {
-                    motionLayout.progress = 0f
 
                     // Each time the animation completes and the download is still ongoing slow down
                     // animation to convey to the user that the download is going to take awhile
-                    motionLayout.setTransitionDuration(
-                        viewModel.calculateDuration(
-                            motionLayout.getTransition(
-                                R.id.loadingTransition
-                            ).duration
-                        )
-                    )
-                    animateLoadingButton();
+                    loadingIndicatorAnimator.duration =
+                        viewModel.calculateDuration(loadingIndicatorAnimator.duration)
+                    startLoadingAnimation()
                 } else {
-                    // When the download is no longer ongoing stop the animation
-                    motionLayout.setTransitionDuration(viewModel.originalDuration)
-                    motionLayout.progress = 0f
+                    // When the download is no longer ongoing stop the animation and return the altered
+                    // values related to the downloading animation to their original values
+                    resetLoadingAnimationValues()
                 }
-            }
 
-            override fun onTransitionTrigger(
-                motionLayout: MotionLayout,
-                i: Int,
-                b: Boolean,
-                v: Float
-            ) {
             }
         })
-        motionLayout.transitionToEnd()
+    }
+
+    /**
+     * Set all values related to the downloading animation to their default values
+     */
+    fun resetLoadingAnimationValues() {
+        binding.loadingButton.downloadProgress = 0f
+        binding.progressCircleView.downloadProgressDegrees = 0
+        loadingIndicatorAnimator.duration = viewModel.originalDuration
+    }
+
+    /**
+     * Set the views related to starting a download to the appropriate state depending on if a
+     * download is in progress.
+     */
+    private fun setViewInteractive() {
+        binding.urlSelectorRadioGroup.children.forEach { radioButton: View ->
+            radioButton.isEnabled = !downloading
+        }
+        binding.loadingButton.isEnabled = !downloading
+    }
+
+    /** Start the loading animations */
+    private fun startLoadingAnimation() {
+        loadingIndicatorAnimator.start()
+    }
+
+    /** Stop the loading animations */
+    private fun stopLoadingAnimation() {
+        loadingIndicatorAnimator.end()
     }
 
     private val receiver = object : BroadcastReceiver() {
@@ -196,10 +249,9 @@ class MainFragment : Fragment() {
                     downloadSuccessful = statusCode == DownloadManager.STATUS_SUCCESSFUL
                 }
 
-                loadingButton.downloadState = DownloadState.Completed
-
+                binding.loadingButton.downloadState = DownloadState.Completed
                 downloading = false
-                motionLayout.progress = 0f
+                stopLoadingAnimation()
 
                 /**
                  * Pass in the repository information to be displayed if the user checks the

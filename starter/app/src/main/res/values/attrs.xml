@@ -12,5 +12,6 @@
     <declare-styleable name="LoadingCircle">
         <attr name="downloadProgressDegrees" format="integer" />
         <attr name="circleProgressDefaultColor" format="color" />
+        <attr name="circleProgressAlertColor" format="color" />
     </declare-styleable>
 </resources>

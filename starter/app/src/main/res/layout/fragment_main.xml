@@ -12,11 +12,10 @@
 
     </data>
 
-    <androidx.constraintlayout.motion.widget.MotionLayout
-        android:id="@+id/motion_layout"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layoutDescription="@xml/content_main_scene"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <ImageView
@@ -89,6 +88,7 @@
             android:id="@+id/progressCircleView"
             android:layout_width="@dimen/medium_view_size"
             android:layout_height="@dimen/medium_view_size"
+            app:circleProgressAlertColor="@color/colorAlertAccent"
             app:circleProgressDefaultColor="@color/colorAccent"
             app:downloadProgressDegrees="0"
             app:layout_constraintBottom_toBottomOf="@id/loadingButton"
@@ -97,5 +97,5 @@
             app:layout_constraintStart_toStartOf="@id/loadingButton"
             app:layout_constraintTop_toTopOf="@+id/loadingButton" />
 
-    </androidx.constraintlayout.motion.widget.MotionLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

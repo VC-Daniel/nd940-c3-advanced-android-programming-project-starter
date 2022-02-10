@@ -5,4 +5,5 @@
     <fraction name="completed_animation_percentage">1.0</fraction>
     <integer name="start_animation_degrees">0</integer>
     <integer name="completed_animation_degrees">360</integer>
+    <fraction name="starting_alpha">0.2</fraction>
 </resources>

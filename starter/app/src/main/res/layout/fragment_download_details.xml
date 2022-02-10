@@ -15,9 +15,11 @@
             type="Boolean" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.constraintlayout.motion.widget.MotionLayout
+        android:id="@+id/motionLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layoutDescription="@xml/fragment_download_details_xml_constraintlayout_scene">
 
         <Button
             android:id="@+id/confirmButton"
@@ -58,7 +60,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/fileNameLabelText"
-            app:layout_constraintTop_toTopOf="@+id/fileNameLabelText" />
+            app:layout_constraintTop_toTopOf="@+id/fileNameLabelText"
+            tools:text="@string/glide_radio_button_prompt" />
 
         <TextView
             android:id="@+id/downloadStatusLabelText"
@@ -78,7 +81,8 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             app:downloadSuccessStatus="@{download_success}"
             app:layout_constraintStart_toStartOf="@+id/downloadInfoText"
-            app:layout_constraintTop_toBottomOf="@+id/downloadInfoText" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintTop_toBottomOf="@+id/downloadInfoText"
+            tools:text="@string/download_success_Description" />
+    </androidx.constraintlayout.motion.widget.MotionLayout>
 
 </layout>
