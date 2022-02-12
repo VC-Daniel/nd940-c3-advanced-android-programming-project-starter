@@ -10,6 +10,7 @@
     <string name="download_notification_channel_name" translatable="true">Download Complete</string>
     <string name="download_notification_channel_Description" translatable="true">"A download has completed"</string>
     <string name="download_notification_channel_Action" translatable="true">"Check the status"</string>
+    <string name="deep_link_url" translatable="false">https:www.notificationapp.com</string>
 
     <string name="download_cloud_description">Image of a cloud with a download symbol inside it.</string>
     <string name="glide_radio_button_prompt">Glide - Image Loading Library by BumpTech</string>

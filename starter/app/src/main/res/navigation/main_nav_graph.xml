@@ -33,6 +33,6 @@
             app:argType="boolean" />
         <deepLink
             android:id="@+id/deepLink"
-            app:uri="https:www.notificationapp.com" />
+            app:uri="@string/deep_link_url" />
     </fragment>
 </navigation>
