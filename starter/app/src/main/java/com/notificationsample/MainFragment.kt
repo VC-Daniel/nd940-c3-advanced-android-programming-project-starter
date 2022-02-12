@@ -50,6 +50,21 @@ class MainFragment : Fragment() {
         ViewModelProvider(this).get(MainViewModel::class.java)
     }
 
+    override fun onStart() {
+        super.onStart()
+        // Register a receiver so we know when the download is complete
+        requireContext().registerReceiver(
+            receiver,
+            IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
+        )
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // unregister the receiver when the app is stopped to prevent memory leaks
+        requireContext().unregisterReceiver(receiver)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -58,12 +73,6 @@ class MainFragment : Fragment() {
         binding = FragmentMainBinding.inflate(inflater)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-
-        // Register a receiver so we know when the download is complete
-        requireContext().registerReceiver(
-            receiver,
-            IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
-        )
 
         // Update the selected repository when the user has made a selection
         binding.urlSelectorRadioGroup.setOnCheckedChangeListener { _, checkedId ->
@@ -255,7 +264,7 @@ class MainFragment : Fragment() {
 
                 /**
                  * Pass in the repository information to be displayed if the user checks the
-                 * status of the downloa. This logic is partially based off of the tutorial at
+                 * status of the download. This logic is partially based off of the tutorial at
                  * https://medium.com/androiddevelopers/navigating-with-deep-links-910a4a6588c
                  */
                 val navigationArgs =
